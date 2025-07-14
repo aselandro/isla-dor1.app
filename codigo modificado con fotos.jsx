@@ -8,7 +8,7 @@ export default function App() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    preferences: '',
+    preferences: [],
     budget: '',
     people: '',
     date: '',
@@ -17,6 +17,16 @@ export default function App() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (e) => {
+    const { value, checked } = e.target;
+    setFormData((prev) => {
+      const newPrefs = checked
+        ? [...prev.preferences, value]
+        : prev.preferences.filter((pref) => pref !== value);
+      return { ...prev, preferences: newPrefs };
+    });
   };
 
   const categories = [
@@ -28,46 +38,11 @@ export default function App() {
   ];
 
   const experiences = [
-    {
-      id: 1,
-      title: 'Paseo en Kayak por Cala d’Or',
-      category: 1,
-      price: 30,
-      duration: '2h',
-      image: 'https://i.imgur.com/your-kayak-image-url.jpg ', // Reemplaza con la URL real
-    },
-    {
-      id: 2,
-      title: 'Tour Gastronómico por Restaurantes Locales',
-      category: 2,
-      price: 60,
-      duration: '3h',
-      image: 'https://i.imgur.com/your-gastronomy-image-url.jpg ', // Reemplaza con la URL real
-    },
-    {
-      id: 3,
-      title: 'Snorkel en Calas Escondidas',
-      category: 3,
-      price: 45,
-      duration: '2.5h',
-      image: 'https://i.imgur.com/your-snorkeling-image-url.jpg ', // Reemplaza con la URL real
-    },
-    {
-      id: 4,
-      title: 'Visita Guiada a Cuevas y Castillos',
-      category: 4,
-      price: 55,
-      duration: '4h',
-      image: 'https://i.imgur.com/your-cave-image-url.jpg ', // Reemplaza con la URL real
-    },
-    {
-      id: 5,
-      title: 'Cena y Fiesta en Club de Playa',
-      category: 5,
-      price: 90,
-      duration: '5h',
-      image: 'https://i.imgur.com/your-beach-club-image-url.jpg ', // Reemplaza con la URL real
-    },
+    { id: 1, title: 'Paseo en Kayak por Cala d’Or', category: 1, price: 30, duration: '2h', image: 'https://placehold.co/600x400?text=Kayak+Adventure' },
+    { id: 2, title: 'Tour Gastronómico por Restaurantes Locales', category: 2, price: 60, duration: '3h', image: ' https://placehold.co/600x400?text=Gourmet+Tour' },
+    { id: 3, title: 'Snorkel en Calas Escondidas', category: 3, price: 45, duration: '2.5h', image: ' https://placehold.co/600x400?text=Snorkel+Adventure' },
+    { id: 4, title: 'Visita Guiada a Cuevas y Castillos', category: 4, price: 55, duration: '4h', image: ' https://placehold.co/600x400?text=Historic+Tours' },
+    { id: 5, title: 'Cena y Fiesta en Club de Playa', category: 5, price: 90, duration: '5h', image: ' https://placehold.co/600x400?text=Beach+Party' },
   ];
 
   const testimonials = [
@@ -96,28 +71,31 @@ export default function App() {
   const handleWhatsAppClick = () => {
     const message = `
 Hola Isla d’Or,
-Me interesa reservar una experiencia.
+
+Me interesa crear un pack personalizado.
+
 Datos:
 Nombre: ${formData.name || 'No especificado'}
 Email: ${formData.email || 'No especificado'}
-Preferencias: ${formData.preferences || 'Sin especificar'}
+Preferencias: ${formData.preferences.length > 0 ? formData.preferences.join(', ') : 'Sin especificar'}
 Presupuesto: ${formData.budget ? formData.budget : 'No definido'}
 Número de personas: ${formData.people || 'No especificado'}
 Fecha: ${formData.date || 'No definida'}
+
 Espero respuesta pronto.
 `.trim();
 
-    const whatsappUrl = `https://wa.me/34123456789?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = ` https://wa.me/34123456789?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
   // Carrusel automático
   const carouselImages = [
-    ' https://i.imgur.com/your-kayak-image-url.jpg ', // Paseo en Kayak
-    'https://i.imgur.com/your-snorkeling-image-url.jpg ', // Snorkel
-    'https://i.imgur.com/your-cave-image-url.jpg ', // Visita a Cuevas
-    'https://i.imgur.com/your-gastronomy-image-url.jpg ', // Tour Gastronómico
-    'https://i.imgur.com/your-beach-club-image-url.jpg ', // Cena y Fiesta
+    ' https://placehold.co/800x500?text=Relax+in+Paradise',
+    ' https://placehold.co/800x500?text=Kayaking+on+Crystal+Waters',
+    ' https://placehold.co/800x500?text=Sunset+in+Cala+d%27Or',
+    ' https://placehold.co/800x500?text=Beach+Party+Vibes',
+    ' https://placehold.co/800x500?text=Explore+Hidden+Coves',
   ];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -131,6 +109,7 @@ Espero respuesta pronto.
   const goToPrevious = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
   };
+
   const goToNext = () => {
     setCurrentImageIndex((prev) => (prev + 1) % carouselImages.length);
   };
@@ -191,10 +170,7 @@ Espero respuesta pronto.
               <p className="mt-4 text-lg text-gray-600">{translations.description[language]}</p>
               <div className="mt-6 flex flex-wrap gap-4">
                 <button
-                  onClick={() => {
-                    setSelectedCategory(null);
-                    setActivePage('experiencias');
-                  }}
+                  onClick={() => setActivePage('experiencias')}
                   className="bg-blue-900 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-800 transition text-lg font-medium"
                 >
                   {translations.ctaExplore[language]}
@@ -354,7 +330,20 @@ Espero respuesta pronto.
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">Preferencias</label>
-                <textarea name="preferences" value={formData.preferences} onChange={handleChange} rows="3" className="w-full border border-gray-300 rounded px-4 py-2"></textarea>
+                <div className="grid grid-cols-2 gap-2">
+                  {categories.map((cat) => (
+                    <label key={cat.id} className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        value={cat.name[language]}
+                        checked={formData.preferences.includes(cat.name[language])}
+                        onChange={handleCheckboxChange}
+                        className="rounded text-blue-600"
+                      />
+                      <span>{cat.name[language]}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">Presupuesto Total</label>
@@ -452,12 +441,3 @@ Espero respuesta pronto.
             <div className="flex space-x-4">
               <button onClick={() => setLanguage('es')} className="text-gray-600 hover:text-blue-900">ES</button>
               <button onClick={() => setLanguage('en')} className="text-gray-600 hover:text-blue-900">EN</button>
-              <button onClick={() => setLanguage('de')} className="text-gray-600 hover:text-blue-900">DE</button>
-            </div>
-          </div>
-          <div className="mt-8 text-center text-gray-500 text-sm">© 2025 Isla d’Or. Todos los derechos reservados.</div>
-        </div>
-      </footer>
-    </div>
-  );
-}
